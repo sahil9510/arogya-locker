@@ -232,6 +232,11 @@ _For starting backend:_
     ACCOUNT_PRIVATE_KEY= 'your-wallet-private-address'
     RPC_URL = 'your-infura-rpc-url'
     ```
+12. In backend/config.js:
+
+    ```js
+    module.exports.CONTRACT_ADDRESS = "your-contract-address"
+    ```
 
 11. Run the following command to start server:
     ```sh
@@ -243,7 +248,7 @@ _For starting frontend:_
 
 12. Create a .env file in frontend:
     ```
-    REACT_APP_API_URL = 'localhost:5000' or 'server-deployment-link'
+    REACT_APP_API_URL = 'http://localhost:5000' or 'server-deployment-link'
 
     REACT_APP_INFURA_ID = 'your-infura-id'
     REACT_APP_INFURA_SECRET_KEY = 'your-infura-secret-key'
