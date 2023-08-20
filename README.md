@@ -30,7 +30,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/sahil9510/sang-hackathon">
+  <a href="https://github.com/sahil9510/arogya-locker">
     <img src="frontend/src/Assets/allogo.png" alt="Logo" width="160" height="150">
   </a>
 
@@ -83,34 +83,22 @@ Arogya Locker aims to transform EHRs with Blockchain by enforcing privacy intero
 
 [![Product Name Screen Shot][product-screenshot]](https://arogya-locker.vercel.app/)
 
-Arogya locker provides identity Management for various stakeholders via ABHA Number (Ayushman Bharat Health Account).
-Arogya Locker digitizes the process of health record and reports management by storing them on blockchain using IPFS. These records could be patients personal health documents, reports and prescriptions.
-We have used IPFS for file storage that eliminates data redundancy by storing only 1 copy of identical resources which also saves storage. 
-IPFS also ensures authenticity and uniqueness by creating a CID for each resource that serves as a digital fingerprint.
-There are four types of users : patient, doctor, hospital, diagnostic and each has a separate interface.
-Arogya Locker enables a two way communication mechanism for doctor and patient while file sharing is done by a secure access providing system. Files can be shared as images or pdfs.
-A search functionality enables easy navigation between various documents.
 
-Entities:
+Arogya locker digitizes the process of health record and reports management by storing them on blockchain using IPFS. These records could be patients personal health docs, reports and prescriptions.
+We have used IPFS(Inter Planetary File System) for file storage that eliminates data redundancy by storing only one copy of identical resources which also saves storage. 
+IPFS also ensures authenticity and and uniqueness by creating a CID for each resource that serves as a digital fingerprint.
+There are four types of users :
+
 * Patient
 * Doctor
 * Hospital
 * Diagnostics
 
-Arogya locker provides identity management. for various stakeholders via Abha (ayushman bharat health acc) id 
-AL digitizes the process of health record and reports management by storing them on blockchain using ipfs.these records could be patients personal health docs, reports and prescriptions
-We have used ipfs for file storage that eliminates data redundancy by storing only 1 copy of identical resources which also saves storage. 
-Ipfs also ensures authenticity and and uniqueness by creating a CID for each resource that serves as a digital fingerprint.
-There are four types of users : patient, doc, hos, diagnostic and each has a separate interface.
+Each has a separate interface.
 
-AL enables a 2 way communication mech for dr and patient while file sharing is done by a secure access providing system. Files can be shared as imgs or pdfs.
-A search functionality enables easy navigation b/w various documents
-Let us understand the architecture, working and various features provided by Arogya locker with the hrlp of an example:
-* We have leveraged blockchain’s promising features like security and efficiency and integrated it with health stack to create a health record management system, Arogya Locker.
-* It digitizes the process of health record and reports management by storing them on blockchain using ipfs.
-* These records are highly secure because of the nature of blockchain. They are only accessible by the owner or to whom access is provided.
-* We provide a two way mechanism in which not only the health facilities send files to a patient, but a patient can also contact a doctor.
-* No familiarity with blockchain required
+Arogya Locker enables a two way communication mechanism for doctor and patient while file sharing is done by a secure access providing system. Files can be shared as images or pdfs.
+Therefore records are highly secure and have authorised access. They are only accessible by the owner or to whom access is granted.
+A search functionality enables easy navigation between various documents.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -118,7 +106,7 @@ Let us understand the architecture, working and various features provided by Aro
 
 ### Built With
 
-The technologies involved in building Sang project are:
+The technologies involved in building Arogya Locker are:
 
 [![React][React.js]][React-url]
 <br/>
@@ -260,43 +248,38 @@ _For starting frontend:_
 
 <!-- USAGE EXAMPLES -->
 ## Screenshots
-### Covid Tracker
-<img src="frontend/public/covid.jpg"/>
+### Identity Management
+<img src="./frontend/src/Assets/login.jpg"/>
 <br/>
 
-This tracker provides the cumulative number of confirmed COVID-19 cases and deaths, as well as the rate of daily COVID-19 cases and deaths in India and its states. This tracker will be updated regularly, as new data are released.
+Arogya Locker uses ABHA ID for identity management. The ABHA IDs are stored on the blockchain on user registration and verified on login. Identity is also managed on a category level: Patient, Doctor, Hospital and Diagnostic Centres.
 
-### Keep Notes
-<img src="frontend/public/notes.jpg"/>
+### Access Mechanism
+<img src="./frontend/src/Assets/pres.jpg"/>
 <br/>
 
-A color co-ordinated note-taking service provided free,with date and time tracking. The notes will be encrypted and can only be read by you.
+File storage is done using IPFS  that eliminates data redundancy by storing only one copy of identical resources. This also saves storage.IPFS also ensures authenticity and uniqueness by creating a CID for each resource that serves as a digital fingerprint.
+Documents are shared by an access control mechanism by which owner can provide access to their document when required.
 
-### Trending News
-<img src="frontend/public/news.jpg"/>
+### Add Prescription
+<img src="./frontend/src/Assets/add pres.jpg"/>
 <br/>
 
-A personalised news aggregator that organises and highlights what’s happening in the country so that you can discover more about the stories that matter to you.
+Doctor can respond to requests by adding a prescription, attaching the required documents and sending it to the patient.
 
-### Paraphraser
-<img src="frontend/public/para.jpg"/>
+### Patient Dashboard
+<img src="./frontend/src/Assets/drs.jpg"/>
 <br/>
 
-Paraphrase tool has numerous features including, rewriting essays, removing plagiarism, and rewording articles. Our paraphrasing tool works best as a word changer and sentence rephraser.
+Patient can view the list of doctors and contact them as required. This ensures a two way communication between patient and doctor. Patient can also view reports sent by diagnostic labs, prescription received and PHRs. PHRs can also be added by the patient.
 
-### PDF Converter
-<img src="frontend/public/converter.jpg"/>
+### Doctor Dashboard
+<img src="./frontend/src/Assets/dreq.jpg"/>
 <br/>
 
-With word to pdf cconverter,you can efficiently and accurately transform any Word document to PDF online. Same layout, same formatting.
+Doctor can view requests sent by patients and respond to them via a prescription. Also they can vheck the prescriptions sent under Reports tab.
 
-### Sudoku
-<img src="frontend/public/sudoku.jpg"/>
-<br/>
-
-Sudoku is one of the most popular puzzle games of all time. The goal of Sudoku is to fill a 9×9 grid with numbers so that each row, column and 3×3 section contain all of the digits between 1 and 9. As a logic puzzle, Sudoku is also an excellent brain game.
-
-_For more examples, please refer to the [site](https://sang-hackathon.web.app/)_
+_For more examples, please refer to the [site](https://arogya-locker.vercel.app/)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
