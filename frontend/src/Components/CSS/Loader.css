@@ -1,0 +1,74 @@
+.loaderContainer {
+  /* display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  z-index: 99; */
+  position: absolute;
+  /* margin:auto; */
+   /* flex: 1; */
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    margin: -50px 0px 0px -50px;
+    
+}
+
+.loading {
+  --speed-of-animation: 0.9s;
+  --gap: 6px;
+  --first-color: #007ee7;
+  --second-color: #007ee7;
+  --third-color: #007ee7;
+  --fourth-color: #007ee7;
+  --fifth-color: #007ee7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  gap: 10px;
+  height: 150px;
+}
+
+.loading span {
+  width: 7px;
+  height: 70px;
+  background: var(--first-color);
+  animation: scale var(--speed-of-animation) ease-in-out infinite;
+}
+
+.loading span:nth-child(2) {
+  background: var(--second-color);
+  animation-delay: -0.8s;
+}
+
+.loading span:nth-child(3) {
+  background: var(--third-color);
+  animation-delay: -0.7s;
+}
+
+.loading span:nth-child(4) {
+  background: var(--fourth-color);
+  animation-delay: -0.6s;
+}
+
+.loading span:nth-child(5) {
+  background: var(--fifth-color);
+  animation-delay: -0.5s;
+}
+
+@keyframes scale {
+  0%,
+  40%,
+  100% {
+    transform: scaleY(0.05);
+  }
+
+  20% {
+    transform: scaleY(1);
+  }
+}

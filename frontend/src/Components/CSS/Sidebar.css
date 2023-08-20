@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap");
+#header {
+  position: absolute;
+  width: 220px;
+  font-family: "Lato", sans-serif;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+#header .pro-sidebar {
+  height: 90vh;
+  width: 100%;
+  min-width: 100%;
+}
+
+  
+#header .pro-sidebar.collapsed {
+  width: 80px;
+  min-width: 80px;
+}
+#header .pro-sidebar-inner {
+  background-color: white;
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+
+}
+#header .pro-sidebar-inner .pro-sidebar-layout {
+  overflow-y: hidden;
+  margin-bottom: 10px;
+}
+#header .pro-sidebar-inner .pro-sidebar-layout :hover {
+  border: 5px black;
+}
+#header .pro-sidebar-inner .pro-sidebar-layout .logotext p {
+  font-size: 20px;
+  padding: 0 20px;
+  color: #000;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+#header .pro-sidebar-inner .pro-sidebar-layout ul {
+  padding: 0 5px;
+}
+#header .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item {
+  color: #000;
+  margin: 10px 0px;
+  font-weight: bold;
+}
+#header
+  .pro-sidebar-inner
+  .pro-sidebar-layout
+  ul
+  .pro-inner-item
+  .pro-icon-wrapper {
+  background-color: rgb(232, 245, 253);
+  border: 2px black;
+  color: #000;
+  border-radius: 3px;
+}
+
+#header .pro-sidebar-inner .pro-sidebar-layout .active {
+  background-color: rgb(232, 245, 253);
+  border-radius: 30px;
+  box-shadow: 3px black;
+}
+#header .logo {
+  padding: 20px;
+}
+
+@media only screen and (max-width: 720px) {
+  html {
+    overflow: hidden;
+  }
+}
