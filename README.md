@@ -37,12 +37,14 @@
   <h3 align="center">Arogya Locker</h3>
 
   <p align="center">
-Arogya Locker aims to transform EHRs with Blockchain by enforcing privacy interoperability and security
+Arogya Locker aims to transform EHRs with Blockchain by enforcing privacy, interoperability and security
     <br />
     <a href="https://github.com/sahil9510/arogya-locker"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://arogya-locker.vercel.app/">View Demo</a>
+    <a href="https://arogya-locker.vercel.app/">View Deployed</a>
+    ·
+    <a href="https://www.youtube.com/watch?v=zkX1JqDF2RY">View Demo Video</a>
     ·
     <a href="https://github.com/sahil9510/arogya-locker/issues">Report Bug</a>
     ·
@@ -85,7 +87,7 @@ Arogya Locker aims to transform EHRs with Blockchain by enforcing privacy intero
 
 
 Arogya locker digitizes the process of health record and reports management by storing them on blockchain using IPFS. These records could be patients personal health docs, reports and prescriptions.
-We have used IPFS(Inter Planetary File System) for file storage that eliminates data redundancy by storing only one copy of identical resources which also saves storage. 
+We have used IPFS (Inter Planetary File System) for file storage that eliminates data redundancy by storing only one copy of identical resources which also saves storage. 
 IPFS also ensures authenticity and and uniqueness by creating a CID for each resource that serves as a digital fingerprint.
 There are four types of users :
 
@@ -96,7 +98,7 @@ There are four types of users :
 
 Each has a separate interface.
 
-Arogya Locker enables a two way communication mechanism for doctor and patient while file sharing is done by a secure access providing system. Files can be shared as images or pdfs.
+Arogya Locker enables a two way communication mechanism for doctor and patient while file sharing is done by a secure access providing system. Files can be shared as images or PDFs.
 Therefore records are highly secure and have authorised access. They are only accessible by the owner or to whom access is granted.
 A search functionality enables easy navigation between various documents.
 
