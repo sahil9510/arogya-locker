@@ -85,6 +85,7 @@ const PresTable = () => {
         title: titl,
         description: desc,
         docs: [documentid],
+        alreadyEncrypted: true
       };
       setIsLoading(true);
       const response = await axios.post(
@@ -236,7 +237,7 @@ const PresTable = () => {
                   <MenuItem value="None">
                     <em>None</em>
                   </MenuItem>
-                  {doctors.map((doctor) => (
+                  {doctors && doctors.map((doctor) => (
                     <MenuItem key={doctor.id} value={doctor.name}>
                     <ListItemText
                     primary={doctor.name}

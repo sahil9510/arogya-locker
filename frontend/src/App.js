@@ -1,4 +1,3 @@
-
 import Login from "../src/Components/Login"
 import Signup from './Components/Signup';
 import { Routes, Route, useNavigate ,Navigate} from "react-router-dom";
@@ -13,6 +12,8 @@ import Diagnostic from "./Components/Diagnostic";
 import { useDispatch,useSelector } from "react-redux";
 import { changeUser, changeloginas,changedata,changedoctors } from "./store/loginslice"
 import Hospital from "./Components/Hospital";
+import { useEffect } from "react";
+
 
 
 
@@ -27,8 +28,27 @@ function App() {
         dispatch(changedata(null))
         dispatch(changedoctors(null))
   })
+  // const googleTranslateElementInit = () => {
+  //   new window.google.translate.TranslateElement(
+  //     {
+  //       pageLanguage: "en",
+  //       autoDisplay: false
+  //     },
+  //     "google_translate_element"
+  //   );
+  // };
+  // useEffect(() => {
+  //   var addScript = document.createElement("script");
+  //   addScript.setAttribute(
+  //     "src",
+  //     "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+  //   );
+  //   document.body.appendChild(addScript);
+  //   window.googleTranslateElementInit = googleTranslateElementInit;
+  // }, []);
   return (
     <div className="App">
+      <div id="recaptcha-container"></div>
       <Navbar />
       <Routes>
         <Route path="/" element={<Landing />}></Route>

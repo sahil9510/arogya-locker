@@ -4,17 +4,22 @@
     "start": "nodemon app.js"
   },
   "dependencies": {
+    "@opengsn/provider": "^3.0.0-beta.6",
+    "@truffle/hdwallet-provider": "^1.4.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.1.1",
+    "cryptr": "^6.3.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
+    "ipfs-http-client": "53.0.1",
+    "js-sha256": "^0.10.1",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1",
     "uuid": "^9.0.0",
-    "ipfs-http-client": "53.0.1",
-    "@truffle/hdwallet-provider": "^1.4.1",
     "web3": "^1.2.9"
   }
 }

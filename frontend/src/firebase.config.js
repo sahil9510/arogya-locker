@@ -7,12 +7,13 @@ import { getAuth } from "firebase/auth";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyB9eZBhverm0Vz1L0Z8ey4OJjEIIxNWetU",
-    authDomain: "flipkart-otpver.firebaseapp.com",
-    projectId: "flipkart-otpver",
-    storageBucket: "flipkart-otpver.appspot.com",
-    messagingSenderId: "887175693293",
-    appId: "1:887175693293:web:59628346026299f4819de4"
+  apiKey: process.env.REACT_APP_FIREBASE_KEY,
+  authDomain: "flipkart-test-50890.firebaseapp.com",
+  projectId: "flipkart-test-50890",
+  storageBucket: "flipkart-test-50890.appspot.com",
+  messagingSenderId: "335015752353",
+  appId: "1:335015752353:web:80488469befcb5fa6336e0",
+  // measurementId: "G-QW8LTLYPJ0"
 };
 
 // Initialize Firebase

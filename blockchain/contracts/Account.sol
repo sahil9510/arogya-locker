@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity^0.8.9;
+pragma solidity ^0.8.9;
 
-
-contract Account{
+import "@opengsn/contracts/src/ERC2771Recipient.sol";
+contract Account is ERC2771Recipient{
+    constructor(address forwarder) {
+        _setTrustedForwarder(forwarder);
+    }
 
     struct Document{
         uint id;

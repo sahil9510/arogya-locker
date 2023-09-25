@@ -1,5 +1,16 @@
-module.exports.CONTRACT_ADDRESS = "0x2DB301deC3a5D76Ea775648ECea58c18AEE6036A"
+module.exports.CONTRACT_ADDRESS = "0x1BEb7Dc34C2759adb7cDDE8d6A55A7B9921a6D83"
 module.exports.CONTRACT_ABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "forwarder",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
   {
     "inputs": [
       {
@@ -972,6 +983,38 @@ module.exports.CONTRACT_ABI = [
         "internalType": "struct Account.Report[]",
         "name": "requests",
         "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTrustedForwarder",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "forwarder",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "forwarder",
+        "type": "address"
+      }
+    ],
+    "name": "isTrustedForwarder",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",

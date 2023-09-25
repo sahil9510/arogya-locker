@@ -70,6 +70,7 @@ const Reports = () => {
         title: titl,
         description: desc,
         docs: [documentid],
+        alreadyEncrypted: true
       };
       setIsLoading(true);
       const response = await axios.post(
@@ -248,7 +249,7 @@ const Reports = () => {
                   <MenuItem value="None">
                     <em>None</em>
                   </MenuItem>
-                  {doctors.map((doctor) => (
+                  {doctors && doctors.map((doctor) => (
                     <MenuItem key={doc.id} value={doc.name}>
                     <ListItemText
                     primary={doctor.name}

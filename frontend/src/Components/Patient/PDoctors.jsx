@@ -98,6 +98,9 @@ const PDoctors = () => {
     if(!toId){
       setToId(idRef.current.value);
       setName(nameRef.current.value);
+      setDirectContact(false);
+    }else{
+      setDirectContact(true);
     }
     setTitle(titleRef.current.value);
     setDescription(descriptionRef.current.value);
@@ -128,6 +131,7 @@ const PDoctors = () => {
       title: title,
       description: description,
       docs: [docId],
+      alreadyEncrypted: directContact
     };
     try {
       setIsLoading(true);

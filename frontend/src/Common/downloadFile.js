@@ -3,16 +3,22 @@ import {create} from 'ipfs-http-client'
 import {Buffer} from 'buffer'
 
 async function ipfsClient(){
-    const auth = 'Basic ' + Buffer.from(process.env.REACT_APP_INFURA_ID + ':' + process.env.REACT_APP_INFURA_SECRET_KEY).toString('base64');
-
-    const ipfs = await create({
+    const auth = 'Basic ' + Buffer.from("2TZSx72Yq9LW0xkgdCnaadanMrd"+ ':' + "494b1150efc0e1adc035ac4e87bf5f52").toString('base64');
+    const ipfs = await create(
+      {
       host: "ipfs.infura.io",
       port: 5001,
       protocol: "https",
       headers: {
         authorization: auth
       }
-    })
+    }
+    )
+
+    // Private
+    // const ipfs = await create({
+    //   url: 'http://127.0.0.1:5001'
+    // })
     return ipfs;
 }
 const downloadFile = async(doc)=>{

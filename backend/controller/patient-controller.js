@@ -1,9 +1,11 @@
 const HttpError = require("../models/http-error.js");
 const { validationResult } = require("express-validator");
+const { RelayProvider } = require('@opengsn/provider')
 var Web3 = require('web3');
 const Provider = require('@truffle/hdwallet-provider');
-const {CONTRACT_ABI,CONTRACT_ADDRESS} = require('../config.js')
+const {CONTRACT_ABI,CONTRACT_ABI2,CONTRACT_ADDRESS} = require('../config.js')
 require("dotenv").config()
+const {encrypt,decrypt} = require('../models/cipher.js')
 
 
 const getProvider = async () => {
@@ -33,15 +35,15 @@ const getProvider = async () => {
 	});
   return provider;
 };
-
 const getPatientById = async (req, res, next) => {
   const patientId = req.params.pid;
   let patient;
   const provider = await getProvider();
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  let abhaId = encrypt(patientId,patientId)
   try {
-    patient = await contract.methods.getPatient(patientId).call(); 
+    patient = await contract.methods.getPatient(abhaId).call(); 
   } catch (err) {
     provider.engine.stop();
     const error = new HttpError(
@@ -59,8 +61,13 @@ const getPatientById = async (req, res, next) => {
     );
     return next(error);
   }
+  const user = {
+    ...user,
+    '0' : decrypt(patient.id,patientId),
+    id: decrypt(patient.id,patientId),
+  }
   provider.engine.stop();
-  res.json({patient:patient})
+  res.json({patient:user})
 };
 
 
@@ -68,14 +75,24 @@ const signup = async (req, res, next) => {
   const { abhaid, name, age, phoneno } = req.body;
 
   let existingUser;
-  const provider = await getProvider();
+  const provider1 = await getProvider();
+  const provider2 = new Web3(provider1);
+  const provider = await RelayProvider.newProvider({provider: provider2.currentProvider,config:{
+    paymasterAddress: process.env.PAYMASTER_ADDRESS,
+    loggerConfiguration: {
+      logLevel: 'debug'
+    }
+  }}).init()  
+  const from = provider.newAccount().address
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  let abhaId = encrypt(abhaid,abhaid)
+  console.log(abhaId)
   try {
-    existingUser = await contract.methods.getPatient(abhaid).call();
+    existingUser = await contract.methods.getPatient(abhaId).call();
   } catch (err) {
     console.log(err)
-    provider.engine.stop();
+    provider1.engine.stop();
     const error = new HttpError(
       "Signing up failed, please try again later!",
       500
@@ -84,15 +101,15 @@ const signup = async (req, res, next) => {
   }
 
   if (existingUser && existingUser.id) {
-    provider.engine.stop();
+    provider1.engine.stop();
     const error = new HttpError("User already exists, please login instead!");
     return next(error);
-  }
-
+  } 
   try {
-    var receipt = await contract.methods.createAgent(abhaid,name,age,[],1,"","").send({from: process.env.ACCOUNT_ADDRESS });
+    var receipt = await contract.methods.createAgent(abhaId,name,age,[],1,"","").send({from});
   } catch (err) {
-    provider.engine.stop();
+    provider1.engine.stop();
+    console.log(err)
     const error = new HttpError(
       "Signing up failed, please try again later!",
       500
@@ -100,7 +117,7 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 
-  provider.engine.stop();
+  provider1.engine.stop();
   res.status(201).json({ id: abhaid });
 };  
 
@@ -110,9 +127,10 @@ const signin = async (req, res, next) => {
   const provider = await getProvider();
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  let abhaId = encrypt(req.body.abhaid,req.body.abhaid)
+  console.log(abhaId)
   try {
-
-    existingUser = await contract.methods.getPatient(req.body.abhaid).call();
+    existingUser = await contract.methods.getPatient(abhaId).call();
   } catch (err) {
     provider.engine.stop();
     const error = new HttpError(
@@ -122,6 +140,7 @@ const signin = async (req, res, next) => {
     return next(error);
   }
   if (!existingUser || !existingUser.id) {
+    console.log(existingUser)
     provider.engine.stop();
     const error = new HttpError(
       "Invalid credentials, could not log you in!",
@@ -130,9 +149,13 @@ const signin = async (req, res, next) => {
     return next(error);
   }
 
-
+  const user = {
+    ...existingUser,
+    '0': decrypt(existingUser.id,req.body.abhaid),
+    id: decrypt(existingUser.id,req.body.abhaid),
+  }
   provider.engine.stop();
-  res.json(existingUser);
+  res.json(user);
 };
 
 module.exports={

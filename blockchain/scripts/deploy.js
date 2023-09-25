@@ -8,9 +8,17 @@ const hre = require("hardhat");
 
 async function main() {
 
-  const contract = await hre.ethers.deployContract("Account");
+  const contract = await hre.ethers.deployContract("Account",["0xB2b5841DBeF766d4b521221732F9B618fCf34A87"]);
   await contract.waitForDeployment();
   console.log("Contract Address: ",contract.target);
+
+  // const contract = await hre.ethers.deployContract("AcceptEverythingPaymaster");
+  // await contract.waitForDeployment();
+  // console.log("Contract Address: ",contract.target);
+
+  // const contract = await hre.ethers.deployContract("AccountCaller",["0x988A9CE40AEE61719954feB6Fd59728A9a9476d0"]);
+  // await contract.waitForDeployment();
+  // console.log("Contract Address: ",contract.target);
   // const currentTimestampInSeconds = Math.round(Date.now() / 1000);
   // const unlockTime = currentTimestampInSeconds + 60;
 

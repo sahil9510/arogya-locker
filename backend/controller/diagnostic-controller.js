@@ -3,6 +3,8 @@ const Provider = require("@truffle/hdwallet-provider");
 const { CONTRACT_ABI, CONTRACT_ADDRESS } = require("../config.js");
 require("dotenv").config();
 const HttpError =require("../models/http-error.js");
+const {encrypt,decrypt} = require('../models/cipher.js')
+const { RelayProvider } = require('@opengsn/provider')
 
 const getProvider = async () => {
   const origInit = Provider.prototype.initialize;
@@ -36,13 +38,22 @@ const signup = async (req, res, next) => {
   const { abhaid, name, address } = req.body;
 
   let existingUser;
-  const provider = await getProvider();
+  const provider1 = await getProvider();
+  const provider2 = new Web3(provider1);
+  const provider = await RelayProvider.newProvider({provider: provider2.currentProvider,config:{
+    paymasterAddress:process.env.PAYMASTER_ADDRESS,
+    loggerConfiguration: {
+      logLevel: 'debug'
+    }
+  }}).init()  
+  const from = provider.newAccount().address
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  let abhaId = encrypt(abhaid,abhaid)
   try {
     existingUser = await contract.methods.getDiagnostic(abhaid).call();
   } catch (err) {
-    provider.engine.stop();
+    provider1.engine.stop();
     const error = new HttpError(
       "Signing up failed, please try again later!",
       500
@@ -51,18 +62,19 @@ const signup = async (req, res, next) => {
   }
 
   if (existingUser && existingUser.id) {
-    provider.engine.stop();
+    provider1.engine.stop();
     const error = new HttpError("User already exists, please login instead!");
     return next(error);
   }
+  let encAdd = encrypt(address,abhaid)
 
   try {
     var receipt = await contract.methods
-      .createAgent(abhaid, name, 0, [], 4, address, "")
-      .send({ from: process.env.ACCOUNT_ADDRESS });
+      .createAgent(abhaId, name, 0, [], 4, encAdd, "")
+      .send({ from });
 
   } catch (err) {
-    provider.engine.stop();
+    provider1.engine.stop();
     const error = new HttpError(
       "Signing up failed, please try again later!",
       500
@@ -70,7 +82,7 @@ const signup = async (req, res, next) => {
 
     return next(error);
   }
-  provider.engine.stop();
+  provider1.engine.stop();
   res.status(201).json({ id: abhaid });
 };
 
@@ -79,8 +91,9 @@ const signin = async (req, res, next) => {
   const provider = await getProvider();
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  let abhaId = encrypt(req.body.abhaid,req.body.abhaid)
   try {
-    existingUser = await contract.methods.getDiagnostic(req.body.abhaid).call();
+    existingUser = await contract.methods.getDiagnostic(abhaId).call();
   } catch (err) {
     provider.engine.stop();
     const error = new HttpError(
@@ -97,8 +110,15 @@ const signin = async (req, res, next) => {
     );
     return next(error);
   }
+  let user = {
+    ...existingUser,
+    "0":decrypt(existingUser.id,req.body.abhaid),
+    "2":decrypt(existingUser.add,req.body.abhaid),
+    id: decrypt(existingUser.id,req.body.abhaid),
+    add: decrypt(existingUser.add,req.body.abhaid)
+  }
   provider.engine.stop();
-  res.json(existingUser);
+  res.json(user);
 };
 
 const getDiagnosticById = async (req, res, next) => {
@@ -107,8 +127,9 @@ const getDiagnosticById = async (req, res, next) => {
   const provider = await getProvider();
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  let abhaId = encrypt(diagnosticId,diagnosticId)
   try {
-    diagnostic = await contract.methods.getDiagnostic(diagnosticId).call();
+    diagnostic = await contract.methods.getDiagnostic(abhaId).call();
   } catch (err) {
     provider.engine.stop();
     const error = new HttpError(
@@ -127,7 +148,14 @@ const getDiagnosticById = async (req, res, next) => {
     return next(error);
   }
   provider.engine.stop();
-  res.json({ diagnostic: diagnostic });
+  let user = {
+    ...diagnostic,
+    "0" : decrypt(diagnostic.id,diagnosticId),
+    "2" : decrypt(diagnostic.add,diagnosticId),
+    id: decrypt(diagnostic.id,diagnosticId),
+    add: decrypt(diagnostic.add,diagnosticId)
+  }
+  res.json({ diagnostic: user });
 };
 
 module.exports = {

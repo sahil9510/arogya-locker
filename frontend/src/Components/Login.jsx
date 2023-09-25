@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState,useRef } from "react";
+import { useState, useRef } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,13 +18,16 @@ import Select from "@mui/material/Select";
 import { useDispatch, useSelector } from "react-redux";
 import { changeUser, changedata, changeloginas } from "../store/loginslice";
 import theme from "./theme";
-import Otpmodal from "./Otpmodal";
 import { setph, setotp, setotpv } from "../store/otpslice";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import Loader from "./Loader";
 import LoadingOverlay from "react-loading-overlay";
-import block from "../Assets/home1.jpg"
+import block from "../Assets/home1.jpg";
+import { auth } from "../firebase.config";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import Modal from "@mui/material/Modal";
+import OtpInput from "otp-input-react";
 
 export default function SignInSide() {
   const [curruser, setcurruser] = useState("");
@@ -38,19 +41,24 @@ export default function SignInSide() {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   let as = useSelector((state) => state.login.loginas);
-  const ph = useSelector((state) => state.otp.ph);
-  const otpv = useSelector((state) => state.otp.otpv);
-  const otp = useSelector((state) => state.otp.otp);
+
+  const [ph, setph] = useState("");
+  const [otpv, setotpv] = useState(false);
+  const [otp, setotp] = useState("");
+  console.log(otp);
+
   const initlog = useSelector((state) => state.login.loginas);
-  const verify=()=>{
-    if(asRef.current.value!=="None"){
-      setEnableButton((prevState)=>{
-        return abRef.current.value.length===14 && phRef.current.value.length === 10
-      })
-    }else{
+  const verify = () => {
+    if (asRef.current.value !== "None") {
+      setEnableButton((prevState) => {
+        return (
+          abRef.current.value.length === 14 && phRef.current.value.length === 10
+        );
+      });
+    } else {
       setEnableButton(false);
     }
-  }
+  };
   const style = {
     position: "absolute",
     top: "50%",
@@ -63,7 +71,48 @@ export default function SignInSide() {
     p: 4,
   };
 
-  const alldata = useSelector((state) => state.login.data);
+  // const alldata = useSelector((state) => state.login.data);
+  function onCaptchVerify() {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response) => {
+            onSignup();
+          },
+          "expired-callback": () => {},
+        },
+        auth
+      );
+    }
+  }
+  const onSignup= async()=>{
+    onCaptchVerify();
+    const appVerifier = window.recaptchaVerifier;
+    const formatPh = "+91" + ph;
+    console.log(formatPh);
+    try {
+      const confirmationResult=await signInWithPhoneNumber(auth, formatPh, appVerifier);
+        window.confirmationResult = confirmationResult;
+        setotpv(true);
+        toast.success("OTP sended successfully!");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  function onOTPVerify() {
+    window.confirmationResult
+      .confirm(otp)
+      .then(async (res) => {
+        setotpv(false);
+        navigate(`/${as}`);
+        toast.success(`Logged in as ${as}`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const handlelogin = async (e) => {
     e.preventDefault();
@@ -76,12 +125,12 @@ export default function SignInSide() {
           userDoctor
         );
         if (response.status === 200) {
-          dispatch(changedata(response.data));
-          localStorage.setItem("abhaid", response.data.id);
-          dispatch(changeUser(response.data.id));
+
           setIsLoading(false);
-          navigate(`/${as}`);
-          toast.success(`Login Successful`);
+          await onSignup();
+          dispatch(changedata(response.data));
+          dispatch(changeUser(response.data.id));
+
         } else {
           setIsLoading(false);
           toast.error(response.data.message);
@@ -101,13 +150,13 @@ export default function SignInSide() {
           process.env.REACT_APP_API_URL+"/api/patient/signin",
           userDoct
         );
+        console.log(response.status);
         if (response.status === 200) {
-          dispatch(changedata(response.data));
-          localStorage.setItem("abhaid", response.data.id);
-          dispatch(changeUser(response.data.id));
           setIsLoading(false);
-          navigate(`/${as}`);
-          toast.success(`Login Successful`);
+          await onSignup();
+          dispatch(changedata(response.data));
+          dispatch(changeUser(response.data.id));
+          
         } else {
           setIsLoading(false);
           toast.error(response.data.message);
@@ -119,8 +168,7 @@ export default function SignInSide() {
         setError(err.response.data.message);
         console.log(error);
       }
-    }
-    else if (as === "diagnostic") {
+    } else if (as === "diagnostic") {
       const userDoct = { abhaid: curruser };
       try {
         setIsLoading(true);
@@ -129,12 +177,11 @@ export default function SignInSide() {
           userDoct
         );
         if (response.status === 200) {
-          dispatch(changedata(response.data));
-          localStorage.setItem("abhaid", response.data.id);
-          dispatch(changeUser(response.data.id));
           setIsLoading(false);
-          navigate(`/${as}`);
-          toast.success(`Login Successful`);
+          await onSignup();
+          dispatch(changedata(response.data));
+          dispatch(changeUser(response.data.id));
+
         } else {
           setIsLoading(false);
           toast.error(response.data.message);
@@ -146,8 +193,7 @@ export default function SignInSide() {
         setError(error.response.data.message);
         console.log(error);
       }
-    }
-    else if (as === "hospital") {
+    } else if (as === "hospital") {
       const userDoctor = { abhaid: curruser };
       try {
         setIsLoading(true);
@@ -156,12 +202,10 @@ export default function SignInSide() {
           userDoctor
         );
         if (response.status === 200) {
-          dispatch(changedata(response.data));
-          localStorage.setItem("abhaid", response.data.id);
-          dispatch(changeUser(response.data.id));
           setIsLoading(false);
-          navigate(`/${as}`);
-          toast.success(`Login Successful`);
+          await onSignup();
+          dispatch(changedata(response.data));
+          dispatch(changeUser(response.data.id));
         } else {
           setIsLoading(false);
           toast.error(response.data.message);
@@ -192,14 +236,38 @@ export default function SignInSide() {
           left: "0px",
           height: "100%",
           width: " 100%",
-          backgroundColor:"rgba(0, 0, 0, 0.5)",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
         },
         content: {},
         spinner: {},
       }}
     >
       <ThemeProvider theme={theme}>
-        <Otpmodal />
+        <Modal
+          open={otpv}
+          onClose={()=>setotpv(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Enter OTP
+            </Typography>
+            <OtpInput
+              value={otp}
+              onChange={setotp}
+              OTPLength={6}
+            />
+            <Button
+              variant="contained"
+              sx={{ mt: 2, mb: 2, ml: 15 }}
+              onClick={() => onOTPVerify()}
+            >
+              {" "}
+              Submit
+            </Button>
+          </Box>
+        </Modal>
         <Grid container component="main" sx={{ height: "90vh" }}>
           <CssBaseline />
           <Grid
@@ -208,8 +276,8 @@ export default function SignInSide() {
             sm={4}
             md={7}
             sx={{
-              backgroundImage:`url(${block})`,
-                // "url(https://newsonair.gov.in/writereaddata/News_Pictures/MIS/2020/Dec/NPIC-2020121573020.png)",
+              backgroundImage: `url(${block})`,
+              // "url(https://newsonair.gov.in/writereaddata/News_Pictures/MIS/2020/Dec/NPIC-2020121573020.png)",
               backgroundRepeat: "no-repeat",
               backgroundColor: (t) =>
                 t.palette.mode === "light"
@@ -255,7 +323,10 @@ export default function SignInSide() {
                     label="Age"
                     fullWidth
                     value={initlog}
-                    onChange={(e) => {verify(); dispatch(changeloginas(e.target.value))}}
+                    onChange={(e) => {
+                      verify();
+                      dispatch(changeloginas(e.target.value));
+                    }}
                     inputRef={asRef}
                   >
                     <MenuItem value="None">
@@ -276,7 +347,10 @@ export default function SignInSide() {
                     type="text"
                     id="abhaid"
                     inputProps={{ maxLength: 14 }}
-                    onChange={(e) => {verify(); setcurruser(e.target.value)}}
+                    onChange={(e) => {
+                      verify();
+                      setcurruser(e.target.value);
+                    }}
                     inputRef={abRef}
                   />
                   <TextField
@@ -287,10 +361,13 @@ export default function SignInSide() {
                     type="number"
                     id="phoneno"
                     inputProps={{ maxLength: 10 }}
-                    onChange={(e) => {verify(); dispatch(setph(e.target.value))}}
+                    onChange={(e) => {
+                      verify();
+                      setph(e.target.value);
+                    }}
                     inputRef={phRef}
                   />
-                  <div id="recaptcha-container"></div>
+                  
                   <Button
                     fullWidth
                     variant="contained"

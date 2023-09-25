@@ -7,20 +7,29 @@ var Web3 = require('web3');
 const Provider = require('@truffle/hdwallet-provider');
 const fs = require("fs");
 const router = express.Router();
+const { RelayProvider } = require('@opengsn/provider')
 require("dotenv").config()
+
 var INFURA_ID = process.env.INFURA_ID
 var INFURA_SECRET_KEY = process.env.INFURA_SECRET_KEY
 const auth = 'Basic ' + Buffer.from(INFURA_ID+ ':' + INFURA_SECRET_KEY).toString('base64');
  
 async function ipfsClient(){
-  const ipfs = await create({
+  // Private
+  const ipfs = await create(
+    {
     host: "ipfs.infura.io",
     port: 5001,
     protocol: "https",
     headers: {
       authorization: auth
     }
-  })
+  }
+  )
+  // Public
+  // const ipfs = await create({
+  //   url: 'http://127.0.0.1:5001'
+  // })
   return ipfs;
 }
 const getProvider = async () => {
@@ -69,23 +78,31 @@ router.post("/file", fileUpload.single("file"), async(req, res) => {
   } 
   let result = await ipfs.add(data,options);
   const cid = await result.path;
-  const provider = await getProvider();
+  const provider1 = await getProvider();
+  const provider2 = new Web3(provider1);
+  const provider = await RelayProvider.newProvider({provider: provider2.currentProvider,config:{
+    paymasterAddress:process.env.PAYMASTER_ADDRESS,
+    loggerConfiguration: {
+      logLevel: 'debug'
+    }
+  }}).init()  
+  const from = provider.newAccount().address
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   try{
-    var receipt = await contract.methods.uploadDoc(filename,cid,fileType,fileDate).send({from: process.env.ACCOUNT_ADDRESS});
+    var receipt = await contract.methods.uploadDoc(filename,cid,fileType,fileDate).send({from});
   }catch(err){
     console.log(err)
-    provider.engine.stop();
+    provider1.engine.stop();
   }
   try{
 
     var id = await contract.methods.noOfDocs().call()
   }catch(err){
     console.log(err)
-    provider.engine.stop();
+    provider1.engine.stop();
   }
-  provider.engine.stop();
+  provider1.engine.stop();
   fs.unlink(path, (err) => {
     if (err) throw err //handle your error the way you want to;
       });

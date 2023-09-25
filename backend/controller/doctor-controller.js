@@ -4,7 +4,8 @@ var Web3 = require("web3");
 const Provider = require("@truffle/hdwallet-provider");
 const { CONTRACT_ABI, CONTRACT_ADDRESS } = require("../config.js");
 require("dotenv").config();
-
+const {encrypt,decrypt} = require('../models/cipher.js')
+const { RelayProvider } = require('@opengsn/provider')
 const getProvider = async () => {
   const origInit = Provider.prototype.initialize;
   Provider.prototype.initialize = async function () {
@@ -39,8 +40,9 @@ const getDoctorById = async (req, res, next) => {
   const provider = await getProvider();
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  let abhaId = encrypt(doctorId,doctorId)
   try {
-    doctor = await contract.methods.getDoctor(doctorId).call();
+    doctor = await contract.methods.getDoctor(abhaId).call();
   } catch (err) {
     provider.engine.stop();
     const error = new HttpError(
@@ -60,7 +62,12 @@ const getDoctorById = async (req, res, next) => {
   }
   // res.json({ doctor: doctor.toObject({ getters: true }) });
   provider.engine.stop();
-  res.json({ doctor: doctor });
+  let user = {
+    ...doctor,
+    "0" :  decrypt(doctor.id,doctorId),
+    id: decrypt(doctor.id,doctorId)
+  }
+  res.json({ doctor: user });
 };
 
 const getAllDoctors = async (req, res, next) => {
@@ -100,15 +107,23 @@ const signup = async (req, res, next) => {
     throw next(error);
   }
   const { abhaid, name, age, phoneno, specialisation, regno } = req.body;
-
+  let abhaId = encrypt(abhaid,abhaid)
   let existingUser;
-  const provider = await getProvider();
+  const provider1 = await getProvider();
+  const provider2 = new Web3(provider1);
+  const provider = await RelayProvider.newProvider({provider: provider2.currentProvider,config:{
+    paymasterAddress: process.env.PAYMASTER_ADDRESS,
+    loggerConfiguration: {
+      logLevel: 'debug'
+    }
+  }}).init()  
+  const from = provider.newAccount().address
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
   try {
-    existingUser = await contract.methods.getDoctor(abhaid).call();
+    existingUser = await contract.methods.getDoctor(abhaId).call();
   } catch (err) {
-    provider.engine.stop();
+    provider1.engine.stop();
     console.log(err);
     const error = new HttpError(
       "Signing up failed, please try again later!",
@@ -118,21 +133,20 @@ const signup = async (req, res, next) => {
   }
 
   if (existingUser && existingUser.id) {
-    provider.engine.stop();
+    provider1.engine.stop();
     const error = new HttpError("User already exists, please login instead!");
     return next(error);
   }
 
 
-
   try {
     var receipt = await contract.methods
-      .createAgent(abhaid, name, age, [], 2, regno, specialisation)
-      .send({ from: process.env.ACCOUNT_ADDRESS });
+      .createAgent(abhaId, name, age, [], 2, regno, specialisation)
+      .send({ from });
 
   } catch (err) {
     console.log(err);
-    provider.engine.stop();
+    provider1.engine.stop();
     const error = new HttpError(
       "Signing up failed, please try again later!",
       500
@@ -142,7 +156,7 @@ const signup = async (req, res, next) => {
   }
 
 
-  provider.engine.stop();
+  provider1.engine.stop();
   res.status(201).json({ id: abhaid });
 };
 
@@ -152,8 +166,9 @@ const signin = async (req, res, next) => {
   const provider = await getProvider();
   var web3 = new Web3(provider);
   var contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  let abhaId = encrypt(req.body.abhaid,req.body.abhaid)
   try {
-    existingUser = await contract.methods.getDoctor(req.body.abhaid).call();
+    existingUser = await contract.methods.getDoctor(abhaId).call();
   } catch (err) {
     provider.engine.stop();
     const error = new HttpError(
@@ -171,9 +186,13 @@ const signin = async (req, res, next) => {
     return next(error);
   }
 
-
+  let user = {
+    ...existingUser,
+    "0" : decrypt(existingUser.id,req.body.abhaid),
+    id: decrypt(existingUser.id,req.body.abhaid)
+  }
   provider.engine.stop();
-  res.json(existingUser);
+  res.json(user);
 };
 
 module.exports = {
